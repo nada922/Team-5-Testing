@@ -1,12 +1,12 @@
 package Tests;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
+
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
+
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -15,7 +15,7 @@ import pages.LeaveRequestPage;
 import pages.LoginPage;
 
 import java.time.Duration;
-import java.util.List;
+
 
 public class LeaveRequestTests extends BaseTest {
     LeaveRequestPage leavePage;
@@ -53,6 +53,7 @@ public class LeaveRequestTests extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
 
+
         // Wait for username
         WebElement UsernameLocator = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@name='username']")));
         UsernameLocator.sendKeys("Admin");
@@ -69,21 +70,27 @@ public class LeaveRequestTests extends BaseTest {
         leaveBtnLocator.click();
 
         //start date
-        WebElement startDateInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][1]//input[@placeholder='yyyy-dd-mm']")));
-        startDateInput.clear();
+        WebElement startDateInput = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][1]//input[@placeholder='yyyy-dd-mm']")
+        ));
+
+        // Select all and delete
+        startDateInput.sendKeys(Keys.CONTROL + "a");
+        startDateInput.sendKeys(Keys.DELETE);
         startDateInput.sendKeys("2025-04-04");
 
 
-        // End Date
-        driver.findElement(By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][2]//input[@placeholder='yyyy-dd-mm']"))
-                .sendKeys("2025-05-05");
-//        WebElement toDateInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][2]//input[@placeholder='yyyy-dd-mm']")));
-//        toDateInput.clear();
-//        toDateInput.sendKeys("2025-05-05");
+        //To Date
+        WebElement toDateInput = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][2]//input[@placeholder='yyyy-dd-mm']")
+        ));
 
-        // Enter Due Date
-//        driver.findElement(By.xpath("//div[@class='oxd-grid-item oxd-grid-item--gutters'][2]//input[@placeholder='yyyy-dd-mm']"))
-//                .sendKeys("2025-01-05");
+        // Select all and delete
+        toDateInput.sendKeys(Keys.CONTROL + "a");
+        toDateInput.sendKeys(Keys.DELETE);
+        toDateInput.sendKeys("2025-05-05");
+
+
         //Type Employee name
         try {
 
@@ -105,66 +112,35 @@ public class LeaveRequestTests extends BaseTest {
             Assert.fail("Failed to select employee: " + e.getMessage());
         }
 
-//        try {
-//
-//            WebElement employeeNameField = wait.until(ExpectedConditions.elementToBeClickable(
-//                    By.xpath("(//div[contains(@class, 'oxd-select-text-input')])[3]")));
-//
-//            employeeNameField.clear();
-//            employeeNameField.getDomProperty("Administration");
-//
-//
-//            Thread.sleep(4000); // Wait 4 seconds for dropdown
-//
-//            employeeNameField.sendKeys(Keys.ARROW_DOWN);
-//            employeeNameField.sendKeys(Keys.ENTER);
-//
-//            Thread.sleep(500);
-//
-//        } catch (Exception e) {
-//            Assert.fail("Failed to select employee: " + e.getMessage());
-//        }
 
+        //Leave Type DropDown menu
+        WebElement leaveTypeDropdown = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//label[contains(.,'Leave Type')]/following::div[contains(@class,'oxd-select-text-input')]")
+        ));
+        leaveTypeDropdown.click();
 
-        // === 2. Leave Type Dropdown ===
-//        WebElement leaveTypeDropdown = wait.until(ExpectedConditions.elementToBeClickable(
-//                By.xpath("//label[contains(.,'Leave Type')]/following::div[contains(@class,'oxd-select-text-input')][1]")));
-//        leaveTypeDropdown.click();
-//
-//        // Select the CAN-Bereavement option with better waiting
-//        WebElement sickLeaveOption = wait.until(ExpectedConditions.elementToBeClickable(
-//                By.xpath("//div[contains(@class, 'oxd-select-text-input') and contains(., 'Bereavement')]")));
-//        sickLeaveOption.click();
+        // Wait for the options to appear and select one
+        String optionToSelect = "CAN - Bereavement"; // Change this to your desired option
+        WebElement desiredOption = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath(String.format("//div[@role='option']/span[contains(.,'%s')]", optionToSelect))
+        ));
+        desiredOption.click();
 
-        // 1. Click the Leave Type dropdown using JavaScript (more reliable than regular click)
-        WebElement leaveDropdown = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//label[contains(.,'Leave Type')]/following::div[contains(@class,'oxd-select-text-input')]")));
-        ((JavascriptExecutor)driver).executeScript("arguments[0].click();", leaveDropdown);
-
-// 2. Select the Bereavement option (case-insensitive, flexible spacing)
-        WebElement bereavementOption = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//div[@role='option']//span[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'bereavement')]")));
-        ((JavascriptExecutor)driver).executeScript("arguments[0].click();", bereavementOption);
-
-        // === 3. Sub Unit Dropdown ===
-//        WebElement subUnitDropdown = wait.until(ExpectedConditions.elementToBeClickable(
-//                By.xpath("(//div[contains(@class, 'oxd-select-text-input')])[3]")));
-//        subUnitDropdown.click();
-//
-//        WebElement engineeringOption = wait.until(ExpectedConditions.elementToBeClickable(
-//                By.xpath("//div[@role='option']//span[text()='Engineering']"))); // Change as needed
-//        engineeringOption.click();
-
+        //Sub Unit DropDown menu
         WebElement subUnitDropdown = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//label[contains(text(),'Sub Unit')]/following::div[contains(@class,'oxd-select-text-input')][1]")));
+                By.xpath("//label[contains(text(),'Sub Unit')]/following::div[contains(@class,'oxd-select-text-input')]")
+        ));
         subUnitDropdown.click();
 
-        // Select the "Engineering" option
-        WebElement engineeringOption = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//div[contains(@class, 'oxd-select-text-input') and contains(., 'Administration')]")));
-        engineeringOption.click();
+        // Wait for the options to appear and select one
+        String optionsToSelect = "Administration"; // Change this to your desired option
+        WebElement desiredOptions = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath(String.format("//div[@role='option']/span[text()='%s']", optionsToSelect))
+        ));
+        desiredOptions.click();
 
-        // Optional: Click Search
+
+        //Click Search
         WebElement searchButton = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[@type='submit' and .=' Search ']")));
         searchButton.click();
