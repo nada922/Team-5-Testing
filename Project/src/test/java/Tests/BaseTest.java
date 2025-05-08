@@ -21,10 +21,10 @@ public class BaseTest {
         driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
 
     }
-
-    @AfterMethod
-    public void tearDown(){
-        if (driver!=null){
-        driver.quit();}
-    }
+//
+//    @AfterMethod
+//    public void tearDown(){
+//        if (driver!=null){
+//        driver.quit();}
+//    }
 }
