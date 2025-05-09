@@ -8,12 +8,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class HomePage {
-    private final WebDriver driver;
-    private final WebDriverWait wait;
+    WebDriver driver;
+    WebDriverWait wait;
 
     // Locators
-    private final By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
-    private final By performanceLocator = By.xpath("//span[text()='Performance']/ancestor::a");
+     By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
+     By performanceLocator = By.xpath("//span[text()='Performance']/ancestor::a");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
