@@ -145,7 +145,6 @@ public class LeaveRequestTests extends BaseTest {
                 By.xpath("//button[@type='submit' and .=' Search ']")));
         searchButton.click();
 
-
     }
 
 }
