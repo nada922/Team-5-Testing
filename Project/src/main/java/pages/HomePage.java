@@ -2,29 +2,30 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class HomePage {
-    //webdriver
-    WebDriver homePageDriver;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    //Locators
-    By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
-    By performancelocator = By.xpath("//span[text()='Performance']/ancestor::a");
+    // Locators
+    private final By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
+    private final By performanceLocator = By.xpath("//span[text()='Performance']/ancestor::a");
 
-
-    //constructors
-
-    public HomePage(WebDriver driver){
-        homePageDriver = driver;
-    }
-    //actions
-    public String getHomepageHeaderText(){
-        return homePageDriver.findElement(headerLocator).getText();
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public PerformancePage clickPerformance(WebDriver driver){
-        homePageDriver.findElement(performancelocator).click();
+    public String getHomepageHeaderText() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(headerLocator)).getText();
+    }
+
+    public PerformancePage navigateToPerformance() {
+        wait.until(ExpectedConditions.elementToBeClickable(performanceLocator)).click();
         return new PerformancePage(driver);
     }
-
 }

@@ -2,26 +2,23 @@ package Tests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import pages.HomePage;
 import pages.LoginPage;
 import pages.PerformancePage;
 
 public class PerformanceTests extends BaseTest {
-    PerformancePage performancePage;
-    LoginPage loginPage;
 
     @Test
-    public void addReview() throws InterruptedException {
-        // Initialize pages
-        loginPage = new LoginPage(driver);
-        performancePage = new PerformancePage(driver);
+    public void addReview() {
+        // Login
+        LoginPage loginPage = new LoginPage(driver);
+        HomePage homePage = loginPage.login("Admin", "admin123");
 
-
-        loginPage.login("Admin", "admin123");
-
-        // Performance test
-        performancePage.navigateToPerformance();
+        // Navigate to Performance
+        PerformancePage performancePage = homePage.navigateToPerformance();
         Assert.assertEquals(performancePage.getHeaderText(), "Performance");
 
+        // Create review
         performancePage.navigateToManageReviews();
         performancePage.clickAddButton();
 
@@ -30,7 +27,7 @@ public class PerformanceTests extends BaseTest {
         performancePage.enterDates("2025-04-23", "2025-30-04", "2025-01-05");
         performancePage.enterSupervisor("a");
 
-        // Assertions
+        // Verify
         String selectedValue = performancePage.getSupervisorValue();
         Assert.assertNotEquals(selectedValue, "", "Supervisor was not selected");
         Assert.assertNotEquals(selectedValue, "a", "Supervisor was not properly selected");

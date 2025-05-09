@@ -6,28 +6,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class PerformancePage {
-    WebDriver driver;
-    WebDriverWait wait;
+     WebDriver driver;
+     WebDriverWait wait;
 
     // Locators
-    By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
-    By performanceMenuLocator = By.xpath("//span[text()='Performance']/ancestor::a");
-    By manageReviewsMenu = By.xpath("//span[text()='Manage Reviews ']");
-    By manageReviews = By.xpath("//a[text()='Manage Reviews']");
-    By addButton = By.xpath("//button[contains(., 'Add')]");
-    By employeeNameField = By.cssSelector("input[placeholder='Type for hints...']");
-    By startDateInput = By.xpath("//input[@placeholder='yyyy-dd-mm']");
-    By endDateInput = By.xpath("//label[contains(text(),'Review Period End Date')]/following::input[contains(@class,'oxd-input')][1]");
-    By dueDateInput = By.xpath("//label[contains(text(),'Due Date')]/following::input[contains(@class,'oxd-input')][1]");
-    By supervisorField = By.xpath("//label[contains(.,'Supervisor Reviewer')]/following::input[@placeholder='Type for hints...'][1]");
+     By headerLocator = By.xpath("//h6[@class='oxd-text oxd-text--h6 oxd-topbar-header-breadcrumb-module']");
+      By manageReviewsMenu = By.xpath("//span[text()='Manage Reviews ']");
+      By manageReviews = By.xpath("//a[text()='Manage Reviews']");
+      By addButton = By.xpath("//button[contains(., 'Add')]");
+      By employeeNameField = By.cssSelector("input[placeholder='Type for hints...']");
+      By startDateInput = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[1]");
+      By endDateInput = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[2]");
+      By dueDateInput = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[3]");
+      By supervisorField = By.xpath("(//input[@placeholder='Type for hints...'])[2]");
+      By dropdownOptions = By.cssSelector(".oxd-autocomplete-option");
 
     public PerformancePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    }
-
-    public void navigateToPerformance() {
-        wait.until(ExpectedConditions.elementToBeClickable(performanceMenuLocator)).click();
     }
 
     public String getHeaderText() {
@@ -42,34 +38,74 @@ public class PerformancePage {
     public void clickAddButton() {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("oxd-toast-close-container")));
         WebElement addBtn = wait.until(ExpectedConditions.elementToBeClickable(addButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", addBtn);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", addBtn);
         addBtn.click();
     }
 
-    public void enterEmployeeName(String partialName) throws InterruptedException {
+    public void enterEmployeeName(String partialName) {
         WebElement field = wait.until(ExpectedConditions.elementToBeClickable(employeeNameField));
         field.clear();
         field.sendKeys(partialName);
-        Thread.sleep(4000); // Consider replacing with proper wait
-        field.sendKeys(Keys.ARROW_DOWN, Keys.ENTER);
-        Thread.sleep(500);
+
+        // Wait for dropdown to appear and select first option
+        try {
+            // Wait for at least one option to appear
+            wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(dropdownOptions, 0));
+
+            // Get all visible options
+            java.util.List<WebElement> options = driver.findElements(dropdownOptions);
+
+            if (!options.isEmpty()) {
+                // Scroll to the first option and click it
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block: 'center'});",
+                        options.get(0)
+                );
+                options.get(0).click();
+
+                // Verify selection was made
+                wait.until(d -> !field.getAttribute("value").isEmpty());
+            } else {
+                throw new RuntimeException("No options found in dropdown");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select employee: " + e.getMessage());
+        }
     }
 
     public void enterDates(String startDate, String endDate, String dueDate) {
-        driver.findElement(startDateInput).sendKeys(startDate);
-        driver.findElement(endDateInput).sendKeys(endDate);
-        driver.findElement(dueDateInput).sendKeys(dueDate);
+        enterDate(startDateInput, startDate);
+        enterDate(endDateInput, endDate);
+        enterDate(dueDateInput, dueDate);
     }
 
-    public void enterSupervisor(String partialName) throws InterruptedException {
+    public void enterSupervisor(String partialName) {
         WebElement field = wait.until(ExpectedConditions.elementToBeClickable(supervisorField));
         field.clear();
         field.sendKeys(partialName);
-        Thread.sleep(5000); // Consider replacing with proper wait
-        field.sendKeys(Keys.ARROW_DOWN, Keys.ENTER);
+        waitForDropdownAndSelectFirstOption(field);
     }
 
     public String getSupervisorValue() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(supervisorField)).getAttribute("value");
+    }
+
+    private void enterDate(By locator, String date) {
+        WebElement field = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        field.clear();
+        field.sendKeys(date);
+    }
+
+    private void waitForDropdownAndSelectFirstOption(WebElement field) {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(d -> {
+                        field.sendKeys(Keys.ARROW_DOWN);
+                        return !driver.findElements(By.cssSelector(".oxd-autocomplete-option")).isEmpty();
+                    });
+            field.sendKeys(Keys.ENTER);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select dropdown option: " + e.getMessage());
+        }
     }
 }
