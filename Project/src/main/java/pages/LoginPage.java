@@ -2,6 +2,10 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class LoginPage {
     //webdriver
@@ -19,12 +23,20 @@ public class LoginPage {
     }
     //Actions
     public void typeUsername(String username){
+        WebDriverWait wait = new WebDriverWait(LoginDriver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(UsernameLocator));
         LoginDriver.findElement(UsernameLocator).sendKeys(username);
+
     }
     public void typePassword(String password){
-        LoginDriver.findElement(UsernameLocator).sendKeys(password);
+        WebDriverWait wait = new WebDriverWait(LoginDriver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(PasswordLocator));
+        LoginDriver.findElement(PasswordLocator).sendKeys(password);
+
     }
     public HomePage clickLoginBtn(WebDriver driver){
+        WebDriverWait wait = new WebDriverWait(LoginDriver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(loginBtn));
      LoginDriver.findElement(loginBtn).click();
      return new HomePage(driver);
     }
