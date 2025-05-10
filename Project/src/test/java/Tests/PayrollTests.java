@@ -2,14 +2,12 @@ package Tests;
 
 import pages.LoginPage;
 import pages.PayrollPage;  // Ensure this import matches your package
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
 
-import java.time.Duration;
 
 public class PayrollTests extends BaseTest {
 
@@ -32,7 +30,7 @@ public class PayrollTests extends BaseTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", employee);
         wait.until(ExpectedConditions.elementToBeClickable(employee)).click();
 
-        // Step 5: Go to Salary tab
+
         WebElement salaryTab = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//a[text()='Salary']")));
         salaryTab.click();
@@ -50,4 +48,3 @@ public class PayrollTests extends BaseTest {
 
 }
 
-//
